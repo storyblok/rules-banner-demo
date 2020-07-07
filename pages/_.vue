@@ -1,54 +1,132 @@
 <template>
-  <page
-    v-if="story.content.component"
-    :key="story.content._uid"
-    :blok="story.content" />
+  <main class="bg-gray-200">
+    <div class="max-w-2xl mx-auto py-12 min-h-screen">
+      <h1 class="mb-10 text-center font-bold text-2xl">Banner Preview Page</h1>
+      <h2 class="italic text-lg">Rules Setup</h2>
+      <form class="px-6 py-6 mb-6 shadow-lg text-center rounded bg-white">
+        <div class="mb-4">
+          <label>Country: </label>
+          <select class="px-2 py-1 border hover:border-gray-600 rounded" v-model="selectedCountry">
+            <option disabled value="">Please select one</option>
+            <option v-for="option in countries" :key="option.text" v-bind:value="option.value">
+              {{ option.text }}
+            </option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label>Sport: </label>
+          <select class="px-2 py-1 border hover:border-gray-600 rounded" v-model="selectedSport">
+            <option disabled value="">Please select one</option>
+            <option v-for="option in sports" :key="option.text" v-bind:value="option.value">
+              {{ option.text }}
+            </option>
+          </select>
+        </div>
+        <div class="mb-8">
+          <label>Club: </label>
+          <select class="px-2 py-1 border hover:border-gray-600 rounded" v-model="selectedClub">
+            <option disabled value="">Please select one</option>
+            <option v-for="option in clubs" :key="option.text" v-bind:value="option.value">
+              {{ option.text }}
+            </option>
+          </select>
+        </div>
+        <button
+          class="px-8 py-2 mx-auto border hover:border-gray-600 rounded shadow"
+          @click.prevent="loadBanner">
+          Load Banner
+        </button>
+      </form>
+      <h2 class="italic text-lg">Banner Preview</h2>
+      <div class="px-6 py-6 shadow-lg text-center rounded bg-white">
+        <p v-if="stories.length === 0 " class="text-center italic">No banner found. Please change the ruleset.</p>
+        <ul v-else>
+          <li
+            class="block mb-4"
+            v-for="banner in stories" :key="banner.id">
+            <Banner :blok="banner.content"/>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
 </template>
 
 <script>
+import Banner from "~/components/Banner";
+
 export default {
+  components: {
+    Banner
+  },
   data () {
     return {
-      story: { content: {} }
+      stories: [],
+      countries: [
+        { text: 'England', value: 'england' },
+        { text: 'Germany', value: 'germany' },
+        { text: 'Austria', value: 'austria' }
+      ],
+      selectedCountry: '',
+      sports: [
+        { text: 'Golf', value: 'golf' },
+        { text: 'Footbal', value: 'footbal' },
+        { text: 'Rugby', value: 'rugby' },
+        { text: 'Tennis', value: 'tennis' }
+      ],
+      selectedSport: '',
+      clubs: [
+        { text: 'FC Red Bull Salzburg', value: 'salzburg' },
+        { text: 'FK Austria Wien', value: 'Wien' },
+        { text: 'LASK Linz', value: 'Linz' }
+      ],
+      selectedClub: ''
     }
   },
-  mounted () {
-    // Use the input event for instant update of content
-    this.$storybridge.on('input', (event) => {
-      if (event.story.id === this.story.id) {
-        this.story.content = event.story.content
-      }
-    })
-    // Use the bridge to listen the events
-    this.$storybridge.on(['published', 'change'], (event) => {
-      this.$nuxt.$router.go({
-        path: this.$nuxt.$router.currentRoute,
-        force: true,
-      })
-    })
-  },
   asyncData (context) {
-    // We are getting only the draft version of the content in this example.
-    // In real world project you should ask for correct version of the content
-    // according to the environment you are deploying to.
-    // const version = context.query._storyblok || context.isDev ? 'draft' : 'published'
-
-    const fullSlug = (context.route.path == '/' || context.route.path == '') ? 'home' : context.route.path
-
     // Load the JSON from the API - loadig the home content (index page)
-    return context.app.$storyapi.get(`cdn/stories/${fullSlug}`, {
-      version: 'draft'
+    return context.app.$storyapi.get(`cdn/stories/`, {
+      version: 'draft',
+      starts_with: "banners/",
     }).then((res) => {
       return res.data
     }).catch((res) => {
       if (!res.response) {
         console.error(res)
-        context.error({ statusCode: 404, message: 'Failed to receive content form api' })
       } else {
         console.error(res.response.data)
-        context.error({ statusCode: res.response.status, message: res.response.data })
       }
     })
+  },
+  methods: {
+    loadBanner() {
+      console.log('clicked');
+
+      return this.$storyapi.get(`cdn/stories/`, {
+        version: 'draft',
+        starts_with: "banners/",
+        per_page: 1,
+        filter_query: {
+          country: {
+            like: `${this.selectedCountry}*`
+          },
+          favorite_club: {
+            like: `${this.selectedClub}*`
+          },
+          sports: {
+            in_array: `${this.selectedSport}`
+          }
+        }
+      }).then((res) => {
+        this.stories = res.data.stories
+      }).catch((res) => {
+        if (!res.response) {
+          console.error(res)
+        } else {
+          console.error(res.response.data)
+        }
+      })
+    }
   }
 }
 </script>
