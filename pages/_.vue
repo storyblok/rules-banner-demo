@@ -32,15 +32,6 @@ export default {
       })
     })
   },
-  async fetch(context) {
-    // Loading reference data - Games in our case
-    if(context.store.state.games.loaded !== '1') {
-
-      let gamesRefRes = await context.app.$storyapi.get(`cdn/stories/`, { starts_with: 'games/', version: 'draft' })
-      context.store.commit('games/setGames', gamesRefRes.data.stories)
-      context.store.commit('games/setLoaded', '1')
-    }
-  },
   asyncData (context) {
     // // This what would we do in real project
     // const version = context.query._storyblok || context.isDev ? 'draft' : 'published'
