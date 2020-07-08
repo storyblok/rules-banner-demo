@@ -1,7 +1,7 @@
 <template>
   <main class="bg-gray-200">
     <div class="max-w-2xl mx-auto py-12 min-h-screen">
-      <h1 class="mb-10 text-center font-bold text-2xl">Banner Preview Page</h1>
+      <h1 class="mb-10 text-center font-bold text-2xl">Banner Personalisation via API</h1>
       <h2 class="italic text-lg">Rules Setup</h2>
       <form class="px-6 py-6 mb-6 shadow-lg text-center rounded bg-white">
         <div class="mb-4">
@@ -44,7 +44,7 @@
           <li
             class="block mb-4"
             v-for="banner in stories" :key="banner.id">
-            <Banner :blok="banner.content"/>
+            <banner :blok="banner.content"/>
           </li>
         </ul>
       </div>
@@ -53,12 +53,8 @@
 </template>
 
 <script>
-import Banner from "~/components/Banner";
 
 export default {
-  components: {
-    Banner
-  },
   data () {
     return {
       stories: [],
