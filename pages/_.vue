@@ -7,7 +7,6 @@
         <div class="mb-4">
           <label>Country: </label>
           <select class="px-2 py-1 border hover:border-gray-600 rounded" v-model="selectedCountry">
-            <option disabled value="">Please select one</option>
             <option v-for="option in countries" :key="option.text" v-bind:value="option.value">
               {{ option.text }}
             </option>
@@ -16,7 +15,6 @@
         <div class="mb-4">
           <label>Sport: </label>
           <select class="px-2 py-1 border hover:border-gray-600 rounded" v-model="selectedSport">
-            <option disabled value="">Please select one</option>
             <option v-for="option in sports" :key="option.text" v-bind:value="option.value">
               {{ option.text }}
             </option>
@@ -25,7 +23,6 @@
         <div class="mb-8">
           <label>Club: </label>
           <select class="px-2 py-1 border hover:border-gray-600 rounded" v-model="selectedClub">
-            <option disabled value="">Please select one</option>
             <option v-for="option in clubs" :key="option.text" v-bind:value="option.value">
               {{ option.text }}
             </option>
@@ -59,19 +56,21 @@ export default {
     return {
       stories: [],
       countries: [
+        { text: 'Not specified value', value: '' },
         { text: 'England', value: 'england' },
         { text: 'Germany', value: 'germany' },
         { text: 'Austria', value: 'austria' }
       ],
       selectedCountry: '',
       sports: [
-        { text: 'Golf', value: 'golf' },
+        { text: 'Not specified value', value: '' },
         { text: 'Footbal', value: 'footbal' },
         { text: 'Rugby', value: 'rugby' },
         { text: 'Tennis', value: 'tennis' }
       ],
       selectedSport: '',
       clubs: [
+        { text: 'Not specified value', value: '' },
         { text: 'FC Red Bull Salzburg', value: 'salzburg' },
         { text: 'FK Austria Wien', value: 'Wien' },
         { text: 'LASK Linz', value: 'Linz' }
